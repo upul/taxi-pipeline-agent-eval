@@ -1,0 +1,9 @@
+project: "taxi-pipeline-agent-eval"
+
+data:
+  raw_path: "data/raw"
+  db_file: "data/nw_taxi.duckdb"
+  base_url: "https://d37ci6vzurychx.cloudfront.net/trip-data"
+  files:
+    - "yellow_tripdata_2024-12.parquet"
+    - "yellow_tripdata_2025-01.parquet"
