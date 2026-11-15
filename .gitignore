@@ -218,3 +218,14 @@ __marimo__/
 
 # Streamlit
 .streamlit/secrets.toml
+
+# data and local experiment related and local config
+data/
+scratch/
+config.yaml
+
+# MacOS
+.DS_Store
+
+# VS Code related
+.vscode/

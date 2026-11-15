@@ -1,0 +1,26 @@
+repos:
+  # General hygiene & safety hooks
+  - repo: https://github.com/pre-commit/pre-commit-hooks
+    rev: v5.0.0
+    hooks:
+      - id: trailing-whitespace
+      - id: end-of-file-fixer
+      - id: check-yaml
+      - id: check-added-large-files
+        args: ['--maxkb=2048'] # Prevents accidentally committing massive files
+      - id: debug-statements   # Catches leftover breakpoint() or pdb statements
+      - id: check-case-conflict
+
+  # Ruff (Extremely fast Python linting & formatting)
+  - repo: https://github.com/astral-sh/ruff-pre-commit
+    rev: v0.9.9 # Match your preferred ruff version
+    hooks:
+      - id: ruff
+        args: [--fix]
+      - id: ruff-format
+
+  # Gitleaks (Secret & credential leak prevention)
+  - repo: https://github.com/gitleaks/gitleaks
+    rev: v8.21.2
+    hooks:
+      - id: gitleaks
