@@ -26,6 +26,10 @@ def _get_taxi_source_url(year: int, month: int, file_list: list[str]) -> str | N
     return None
 
 
+def get_trip_breakdown(year: int, month: int) -> dict:
+    pass
+
+
 if __name__ == "__main__":
     result = get_monthly_statistics(2025, 1)
     print(result["average_trip_cost"])
