@@ -3,7 +3,7 @@ import json
 from openai import OpenAI
 
 from taxi_agent.agent.tool_schemas import tools
-from taxi_agent.agent.tools import get_monthly_statistics
+from taxi_agent.agent.tools import get_monthly_statistics, get_trip_breakdown
 from taxi_agent.config import get_env
 
 api_key = get_env("OPENROUTER_API_KEY")
@@ -62,6 +62,18 @@ def run_agent(
                         "content": json.dumps(result),
                     }
                 )
+            elif call.function.name == "get_trip_breakdown":
+                args = json.loads(call.function.arguments)
+                result = get_trip_breakdown(**args)
+
+                messages.append(
+                    {
+                        "role": "tool",
+                        "tool_call_id": call.id,
+                        "content": json.dumps(result),
+                    }
+                )
+
             else:
                 raise ValueError(f"Unsupported tool: {call.function.name}")
 
@@ -74,9 +86,17 @@ if __name__ == "__main__":
         max_iterations=5,
     )
     print(result)
+    print("----------------")
 
     result = run_agent(
         user_question="Compare the average taxi trip costs in December 2024 and January 2025. Calculate the percentage change and explain whether the average increased or decreased.",
+        max_iterations=5,
+    )
+    print(result)
+    print("----------------")
+
+    result = run_agent(
+        user_question="Why did average taxi trip costs decrease between December 2024 and January 2025? Investigate whether changes in trip-distance distribution could help explain the decrease.",
         max_iterations=5,
     )
     print(result)

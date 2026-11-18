@@ -6,6 +6,14 @@ files = config["data"]["files"]
 file_list = [f"{base_url}/{file}" for file in files]
 
 
+def get_trip_breakdown(year: int, month: int) -> dict:
+    monthly_data_file = _get_taxi_source_url(year, month, file_list)
+    if not monthly_data_file:
+        raise ValueError(f"year: {year} and month:{month} is not in our DB")
+
+    return basic_statistics.calculate_trip_breakdown(monthly_data_file)
+
+
 def get_monthly_statistics(year: int, month: int) -> dict:
     monthly_data_file = _get_taxi_source_url(year, month, file_list)
     if not monthly_data_file:
@@ -24,10 +32,6 @@ def _get_taxi_source_url(year: int, month: int, file_list: list[str]) -> str | N
         return target_url
 
     return None
-
-
-def get_trip_breakdown(year: int, month: int) -> dict:
-    pass
 
 
 if __name__ == "__main__":

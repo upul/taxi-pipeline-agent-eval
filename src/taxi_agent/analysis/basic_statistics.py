@@ -5,6 +5,43 @@ from taxi_agent.config import config
 db_file = config["data"]["db_file"]
 
 
+def calculate_trip_breakdown(source_file: str) -> dict:
+    con = duckdb.connect(db_file)
+    try:
+        # Run the distance-bucketed aggregation query
+        result = con.execute(
+            """
+            SELECT
+                CASE
+                    WHEN trip_distance <= 2.0 THEN '0-2 miles'
+                    WHEN trip_distance > 2.0 AND trip_distance <= 5.0 THEN '2-5 miles'
+                    WHEN trip_distance > 5.0 AND trip_distance <= 10.0 THEN '5-10 miles'
+                    ELSE 'Over 10 miles'
+                END AS distance_bucket,
+                COUNT(*) AS trip_count,
+                ROUND(AVG(total_amount), 2) AS avg_cost
+            FROM taxi_trips
+            WHERE source_file = ? AND trip_distance > 0 AND total_amount > 0
+            GROUP BY distance_bucket
+            ORDER BY
+                CASE distance_bucket
+                    WHEN '0-2 miles' THEN 1
+                    WHEN '2-5 miles' THEN 2
+                    WHEN '5-10 miles' THEN 3
+                    ELSE 4
+                END
+        """,
+            [source_file],
+        ).fetchall()
+        output = {}
+        for bucket, trip_count, ave_cost in result:
+            output[bucket] = {"trip_count": trip_count, "ave_cost": ave_cost}
+        return output
+
+    finally:
+        con.close()
+
+
 def calculate_monthly_statistics(source_file: str) -> dict:
     con = duckdb.connect(db_file)
     try:
@@ -125,5 +162,9 @@ if __name__ == "__main__":
         url = f"{base_url}/{file}"
         print(f"source file: {url}")
         output = calculate_monthly_statistics(url)
-        print(output)
+        print(f"basic statistics: {output}")
+        print("")
+
+        output = calculate_trip_breakdown(f"{base_url}/{file}")
+        print(f"breakdown statistics: {output}")
         print("")
