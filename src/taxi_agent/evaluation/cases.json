@@ -1,0 +1,163 @@
+
+[
+  {
+    "id": "jan_2025_avg_cost",
+    "question": "What was the average taxi trip cost in January 2025?",
+    "required_tool_calls": [
+      {
+        "name": "get_monthly_statistics",
+        "arguments": {
+          "year": 2025,
+          "month": 1
+        }
+      }
+    ],
+    "expected_answer": {
+      "criteria": [
+        {
+          "type": "numeric",
+          "metric": "jan_2025_avg_cost",
+          "value": 26.57
+        }
+      ]
+    }
+  },
+  {
+    "id": "jan_2025_vs_dec_2024",
+    "question": "Compare the average taxi trip costs in December 2024 and January 2025.",
+    "required_tool_calls": [
+      {
+        "name": "get_monthly_statistics",
+        "arguments": {
+          "year": 2024,
+          "month": 12
+        }
+      },
+      {
+        "name": "get_monthly_statistics",
+        "arguments": {
+          "year": 2025,
+          "month": 1
+        }
+      }
+    ],
+    "expected_answer": {
+      "criteria": [
+        {
+          "type": "numeric",
+          "metric": "dec_2024_avg_cost",
+          "value": 29.43
+        },
+        {
+          "type": "numeric",
+          "metric": "jan_2025_avg_cost",
+          "value": 26.57
+        },
+        {
+          "type": "categorical",
+          "metric": "change_direction",
+          "value": "decrease"
+        }
+      ]
+    }
+  },
+  {
+    "id": "trip_cost_investigation",
+    "question": "Why did average taxi trip costs decrease between December 2024 and January 2025? Investigate whether trip-distance distribution contributed.",
+    "required_tool_calls": [
+      {
+        "name": "get_monthly_statistics",
+        "arguments": {
+          "year": 2025,
+          "month": 1
+        }
+      },
+      {
+        "name": "get_monthly_statistics",
+        "arguments": {
+          "year": 2024,
+          "month": 12
+        }
+      },
+      {
+        "name": "get_trip_breakdown",
+        "arguments": {
+          "year": 2025,
+          "month": 1
+        }
+      },
+      {
+        "name": "get_trip_breakdown",
+        "arguments": {
+          "year": 2024,
+          "month": 12
+        }
+      }
+    ],
+    "expected_answer": {
+        "criteria": [
+          {
+            "type": "numeric",
+            "metric": "dec_2024_avg_cost",
+            "value": 29.43
+          },
+          {
+            "type": "numeric",
+            "metric": "jan_2025_avg_cost",
+            "value": 26.57
+          },
+          {
+            "type": "categorical",
+            "metric": "change_direction",
+            "value": "decrease"
+          },
+          {
+            "type": "semantic",
+            "metric": "distance_mix_explanation",
+            "value": "The distribution shifted toward shorter trips, and average costs decreased within all four distance buckets."
+          },
+          {
+            "type": "semantic",
+            "metric": "causal_uncertainty",
+            "value": "The observed changes provide possible explanations but do not establish the underlying causes."
+          }
+        ]
+      }
+  },
+  {
+    "id": "unsupported_month",
+    "question": "What was the average taxi trip cost in March 2025?",
+    "required_tool_calls": [
+      {
+        "name": "get_monthly_statistics",
+        "arguments": {
+          "year": 2025,
+          "month": 3
+        }
+      }
+    ],
+    "expected_answer": {
+      "criteria": [
+        {
+          "type": "semantic",
+          "metric": "data_unavailable",
+          "value": "Taxi data for March 2025 is not avaialble in the DB."
+        }
+      ]
+    }
+  },
+  {
+    "id": "general_parquet_question",
+    "question": "What is the difference between Parquet and CSV?",
+    "required_tool_calls": [],
+    "expected_answer": {
+      "criteria": [
+        {
+          "type": "semantic",
+          "metric": "information",
+          "value": "Parquet stores compressed data in columns for fast analytics queries, whereas CSV stores plain text row by row for simple human and spreadsheet readability."
+        }
+      ]
+    }
+  }
+]
